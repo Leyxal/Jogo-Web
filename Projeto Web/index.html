@@ -5,7 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="description" content="Amazônia Bobble: Guardiões da Floresta - Jogo Puzzle Bobble temático do folclore e frutas amazônicas.">
   <meta name="theme-color" content="#041208">
-  <title>Amazônia Bobble: Guardiões da Floresta</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Fruit Bublle">
+  <link rel="manifest" href="manifest.json">
+  <title>Fruit Bublle</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,7 +18,7 @@
   <header class="game-header" role="banner">
     <div class="game-title">
       <span style="font-size: 1.4rem;">🌿</span>
-      <h1>AMAZÔNIA BOBBLE</h1>
+      <h1>Fruit Bublle</h1>
     </div>
     <div class="header-controls">
       <button id="btnPause" class="btn-icon" title="Menu de Pausa (P / Esc)" aria-label="Abrir Menu de Pausa">
@@ -199,5 +203,12 @@
 
   <!-- SCRIPT DO JOGO (Compatível com duplo clique local file:// e servidores web) -->
   <script src="js/game.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
 </body>
 </html>
