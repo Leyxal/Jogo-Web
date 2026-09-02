@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Amazônia Bobble: Guardiões da Floresta - Jogo Puzzle Bobble temático do folclore e frutas amazônicas.">
+  <meta name="theme-color" content="#041208">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Fruit Bublle">
+  <link rel="manifest" href="manifest.json">
+  <title>Fruit Bublle</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- CABEÇALHO DO JOGO -->
+  <header class="game-header" role="banner">
+    <div class="game-title">
+      <span style="font-size: 1.4rem;">🌿</span>
+      <h1>Fruit Bublle</h1>
+    </div>
+    <div class="header-controls">
+      <button id="btnPause" class="btn-icon" title="Menu de Pausa (P / Esc)" aria-label="Abrir Menu de Pausa">
+        ⏸️ Menu / Pausa
+      </button>
+    </div>
+  </header>
+
+  <!-- PAINEL DE ESTATÍSTICAS E PLACAR -->
+  <main class="game-wrapper">
+    <section class="game-stats" aria-label="Estatísticas da Partida">
+      <div class="stat-card">
+        <div class="stat-label">Pontuação</div>
+        <div id="scoreDisplay" class="stat-value">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Fase</div>
+        <div id="levelDisplay" class="stat-value highlight">1 / 10</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Recorde</div>
+        <div id="highScoreDisplay" class="stat-value">0</div>
+      </div>
+    </section>
+
+    <!-- BARRA DE ESPECIAL DO GUARDIÃO -->
+    <section class="special-section" aria-label="Poder do Guardião">
+      <div class="hero-badge">
+        <div id="heroAvatar" class="hero-avatar">🐍</div>
+        <div class="hero-info">
+          <div id="heroName" class="hero-name">Boitatá</div>
+          <div class="hero-role">Guardião</div>
+        </div>
+      </div>
+      <div class="special-bar-wrapper">
+        <div id="specialText" class="special-text">Especial: 0%</div>
+        <div id="specialBarContainer" class="special-bar-container">
+          <div id="specialFill" class="special-fill"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TELA DO JOGO (CANVAS + MODAIS) -->
+    <div class="game-container">
+      <canvas id="gameCanvas" width="448" height="640"></canvas>
+
+      <!-- MODAL 1: SELEÇÃO DE GUARDIÃO -->
+      <div id="modalCharacterSelect" class="modal-backdrop">
+        <div class="modal-card">
+          <h2 class="modal-title">ESCOLHA SEU GUARDIÃO</h2>
+          <p class="modal-subtitle">Defenda a floresta amazônica colhendo as frutas regionais!</p>
+
+          <div class="character-selection-grid">
+            <!-- BOITATÁ -->
+            <div id="btnChooseBoitata" class="char-choice-card boitata-card" role="button" tabindex="0">
+              <div class="char-avatar-big">🐍🔥</div>
+              <div class="char-name-choice">Boitatá</div>
+              <div class="char-fav-fruit">Fruta: Açaí 🫐</div>
+              <div class="char-power-desc"><strong>Especial:</strong> Baforada de Fogo que incinera tudo em linha reta!</div>
+            </div>
+
+            <!-- BOTO COR-DE-ROSA -->
+            <div id="btnChooseBoto" class="char-choice-card boto-card" role="button" tabindex="0">
+              <div class="char-avatar-big">🐬✨</div>
+              <div class="char-name-choice">Boto Cor-de-Rosa</div>
+              <div class="char-fav-fruit">Fruta: Manga 🥭</div>
+              <div class="char-power-desc"><strong>Especial:</strong> Explosão Encantada em área ao atingir as bolhas!</div>
+            </div>
+          </div>
+
+          <p style="font-size: 0.72rem; color: #94a3b8;">
+            💡 <em>Dica: Estoure a fruta favorita do seu guardião para carregar a barra de especial!</em>
+          </p>
+        </div>
+      </div>
+
+      <!-- MODAL PAUSA -->
+      <div id="modalPause" class="modal-backdrop hidden">
+        <div class="modal-card">
+          <h2 class="modal-title" style="color: #a7f3d0;">PAUSA ⏸️</h2>
+          <p class="modal-subtitle">O que deseja fazer agora?</p>
+
+          <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px;">
+            <button id="btnResume" class="btn-primary">
+              ▶️ Continuar Jogando
+            </button>
+            <button id="btnPauseInstructions" class="btn-secondary" style="margin-top: 0; width: 100%; padding: 10px; font-size: 0.95rem;">
+              ❓ Como Jogar
+            </button>
+            <button id="btnPauseSound" class="btn-secondary" style="margin-top: 0; width: 100%; padding: 10px; font-size: 0.95rem;">
+              🔊 Som: Ligado
+            </button>
+            <button id="btnMainMenu" class="btn-secondary" style="margin-top: 0; width: 100%; padding: 10px; font-size: 0.95rem; border-color: rgba(239, 68, 68, 0.5); color: #fca5a5;">
+              🏠 Menu Principal / Trocar Guardião
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL 2: FASE CONCLUÍDA -->
+      <div id="modalLevelClear" class="modal-backdrop hidden">
+        <div class="modal-card">
+          <h2 class="modal-title" style="color: #34d399;">VITÓRIA NA FASE! 🌿</h2>
+          <p class="modal-subtitle">A floresta agradece sua proteção!</p>
+          <div style="margin: 16px 0; font-size: 1.1rem;">
+            Pontuação Atual: <strong id="clearLevelScore" style="color: #ffd700;">0</strong>
+          </div>
+          <button id="btnNextLevel" class="btn-primary">Avançar para Próxima Fase ➔</button>
+        </div>
+      </div>
+
+      <!-- MODAL 3: GAME OVER -->
+      <div id="modalGameOver" class="modal-backdrop hidden">
+        <div class="modal-card">
+          <h2 class="modal-title" style="color: #ef4444;">FIM DE JOGO 🍂</h2>
+          <p class="modal-subtitle">As frutas cruzaram a linha de perigo!</p>
+          <div style="margin: 16px 0; font-size: 1.1rem;">
+            Pontuação Final: <strong id="gameOverScore" style="color: #ffd700;">0</strong>
+          </div>
+          <button id="btnRestart" class="btn-primary" style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);">
+            Tentar Novamente ↺
+          </button>
+        </div>
+      </div>
+
+      <!-- MODAL 4: VITÓRIA TOTAL (10 FASES CONCLUÍDAS) -->
+      <div id="modalAllClear" class="modal-backdrop hidden">
+        <div class="modal-card">
+          <h2 class="modal-title" style="color: #ffd700;">🏆 GRANDE GUARDIÃO! 🏆</h2>
+          <p class="modal-subtitle">Você completou todas as 10 fases e salvou a biodiversidade da Amazônia!</p>
+          <div style="margin: 16px 0; font-size: 1.2rem;">
+            Pontuação Recorde: <strong id="allClearScore" style="color: #ffd700;">0</strong>
+          </div>
+          <button id="btnRestartAll" class="btn-primary">Jogar Novamente ↺</button>
+        </div>
+      </div>
+
+      <!-- MODAL 5: COMO JOGAR E INSTRUÇÕES -->
+      <div id="modalInstructions" class="modal-backdrop hidden">
+        <div class="modal-card" style="text-align: left;">
+          <h2 class="modal-title" style="text-align: center;">COMO JOGAR 📜</h2>
+          
+          <div style="font-size: 0.8rem; line-height: 1.5; color: #e2e8f0; margin-bottom: 12px;">
+            <p><strong>🎯 Objetivo:</strong> Combine 3 ou mais frutas iguais para colhê-las antes que ultrapassem a linha de perigo.</p>
+            <p><strong>✨ Cascata / Queda:</strong> Bolhas que perderem a sustentação no teto caem e rendem pontos bônus massivos!</p>
+          </div>
+
+          <h3 style="font-size: 0.85rem; color: #a7f3d0; margin-top: 8px;">🎮 Controles Simples:</h3>
+          <ul style="font-size: 0.78rem; color: #cbd5e1; margin-left: 18px; margin-top: 4px; line-height: 1.4;">
+            <li><strong>Teclado:</strong> <span class="key-badge">←</span> <span class="key-badge">→</span> para mirar, <span class="key-badge">↑</span> ou <span class="key-badge">Espaço</span> para disparar.</li>
+            <li><strong>Mouse:</strong> Mova o cursor para mirar, clique esquerdo para disparar.</li>
+            <li><strong>Touch / Celular:</strong> Pressione e arraste o dedo para mirar, solte para disparar.</li>
+          </ul>
+
+          <h3 style="font-size: 0.85rem; color: #fde047; margin-top: 10px;">🍓 Frutas da Amazônia:</h3>
+          <div class="fruit-legend">
+            <div class="fruit-item">🫐 Açaí</div>
+            <div class="fruit-item">🥭 Manga</div>
+            <div class="fruit-item">🥥 Cupuaçu</div>
+            <div class="fruit-item">👁️ Guaraná</div>
+            <div class="fruit-item">🌴 Buriti</div>
+            <div class="fruit-item">🌰 Castanha</div>
+          </div>
+
+          <button id="btnCloseInstructions" class="btn-primary" style="margin-top: 8px;">Entendi, Vamos Jogar!</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DICAS DE CONTROLE RÁPIDAS -->
+    <div class="controls-hint">
+      <span>⌨️ <strong class="key-badge">←</strong> <strong class="key-badge">→</strong> Girar | <strong class="key-badge">↑</strong> Atirar</span>
+      <span>🖱️ Mira + Clique</span>
+      <span>📱 Toque e Solte</span>
+    </div>
+  </main>
+
+  <!-- RODAPÉ ACADÊMICO -->
+  <footer class="game-footer">
+    <p>Desafio Web Games • Missão Amazônia Criativa • Programação em Jogos Digitais</p>
+  </footer>
+
+  <!-- SCRIPT DO JOGO (Compatível com duplo clique local file:// e servidores web) -->
+  <script src="js/game.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
